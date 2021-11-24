@@ -1,52 +1,55 @@
 package com.patronage.parkinglot.controller;
 
-import com.patronage.parkinglot.model.Agent;
-import com.patronage.parkinglot.repository.AgentRepository;
+import com.patronage.parkinglot.model.DTO.AgentDTO;
+import com.patronage.parkinglot.response.exception.AgentAlreadyExistsException;
 import com.patronage.parkinglot.response.exception.AgentNotFoundException;
+import com.patronage.parkinglot.service.AgentService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 public class AgentController {
 
-    private final AgentRepository repository;
-
-    AgentController(AgentRepository repository) {
-        this.repository = repository;
-    }
-
+    private final AgentService agentService;
 
     @GetMapping("/agents")
-    List<Agent> all() {
-        return repository.findAll();
+    ResponseEntity<List<AgentDTO>> all() {
+        return new ResponseEntity<>(agentService.getAgents(), HttpStatus.OK);
     }
 
-    @PostMapping("/agents/new")
-    Agent newReservingAgent(@RequestBody Agent newAgent) {
-        return repository.save(newAgent);
-    }
 
     @GetMapping("/agents/id/{id}")
-    Agent one(@PathVariable Long id) throws AgentNotFoundException {
-        return repository.findById(id)
-                .orElseThrow(() -> new AgentNotFoundException(id));
+    ResponseEntity<AgentDTO> one(@PathVariable Long id) throws AgentNotFoundException {
+        return new ResponseEntity<>(agentService.getAgentByID(id), HttpStatus.OK);
     }
 
     @GetMapping("/agents/name/{name}")
-    Agent one(@PathVariable String name) throws AgentNotFoundException {
-        return repository.findAgentByName(name)
-                .orElseThrow(() -> new AgentNotFoundException(name));
+    ResponseEntity<AgentDTO> one(@PathVariable String name) throws AgentNotFoundException {
+        return new ResponseEntity<>(agentService.getAgentByName(name), HttpStatus.OK);
     }
 
+    @PostMapping("/agents/new")
+    ResponseEntity<Void> newAgent(@RequestBody AgentDTO newAgent) throws AgentAlreadyExistsException {
+        agentService.createNewAgent(newAgent);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+
     @DeleteMapping("/agents/id/{id}")
-    void deleteAgent(@PathVariable Long id) {
-        repository.deleteById(id);
+    ResponseEntity<String> deleteAgent(@PathVariable Long id) throws AgentNotFoundException {
+        agentService.deleteAgentByID(id);
+        return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
     }
 
     @DeleteMapping("/agents/name/{name}")
-    void deleteAgent(@PathVariable String name) {
-        repository.deleteAgentByName(name);
+    ResponseEntity<String> deleteAgent(@PathVariable String name) throws AgentNotFoundException {
+        agentService.deleteAgentByName(name);
+        return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
     }
 
 }

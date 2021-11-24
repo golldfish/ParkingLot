@@ -19,7 +19,7 @@ public class Reservation {
     @JoinColumn(name = "parkingLot", referencedColumnName = "id")
     private ParkingLot parkingLot;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent", referencedColumnName = "id")
     private Agent agent;
 

@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 
 @Entity
@@ -24,7 +25,7 @@ public class Agent {
     @NotNull
     private String name;
 
-    @OneToOne(mappedBy = "agent")
-    private Reservation reservation;
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reservation> reservations;
 
 }
