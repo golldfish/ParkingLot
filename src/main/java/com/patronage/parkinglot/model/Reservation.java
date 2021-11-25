@@ -17,7 +17,7 @@ public class Reservation {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "parkingLot", referencedColumnName = "id")
-    private ParkingLot parkingLot;
+    private ParkingPlace parkingLot;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent", referencedColumnName = "id")

@@ -1,9 +1,11 @@
 package com.patronage.parkinglot.model.DTO;
 
-public class ParkingLotDTO {
+import lombok.Data;
+
+@Data
+public class ParkingPlaceDTO {
     private Long id;
-    private int parkPlaceNumber;
+    private int placeNumber;
     private int tier;
     private boolean placeForDisabledPeople;
-    private ReservationDTO reservationDTO;
 }

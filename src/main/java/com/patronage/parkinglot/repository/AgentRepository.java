@@ -9,4 +9,6 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     Optional<Agent> findAgentByName(String name);
 
     Agent deleteAgentByName(String name);
+
+
 }
