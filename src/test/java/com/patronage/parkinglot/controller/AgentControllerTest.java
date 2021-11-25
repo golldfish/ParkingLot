@@ -30,16 +30,18 @@ public class AgentControllerTest {
     @MockBean
     private AgentService agentService;
 
-//    @Test
-//    public void getAllAgents() throws Exception {
-//        AgentDTO agentDTO = AgentDTO.builder().name("John").build();
-//        List<AgentDTO> agents = Collections.singletonList(agentDTO);
-//
-//        when(agentService.getAgents()).thenReturn((agents));
-//
-//        this.mvc.perform(get("/agents"))
-//                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(1)))
-//                .andExpect(jsonPath("$[0].name", is(agentDTO.getName())));
-//    }
+    @Test
+    public void getAllAgents() throws Exception {
+        AgentDTO agentDTO = new AgentDTO();
+        agentDTO.setId(1L);
+        agentDTO.setName("Bob");
+        List<AgentDTO> agents = Collections.singletonList(agentDTO);
+
+        when(agentService.getAgents()).thenReturn((agents));
+
+        this.mvc.perform(get("/agents"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].name", is(agentDTO.getName())));
+    }
 
 }
