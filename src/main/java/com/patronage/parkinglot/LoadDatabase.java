@@ -20,6 +20,8 @@ public class LoadDatabase {
         ParkingPlace parkingLot = createParkingLot(20L, 1, 1, true);
         ParkingPlace parkingLot1 = createParkingLot(21L, 2, 1, false);
         ParkingPlace parkingLot2 = createParkingLot(22L, 3, 1, false);
+        ParkingPlace parkingLot3 = createParkingLot(23L, 4, 1, false);
+
         return args -> {
             agentRepository.save(agent);
             agentRepository.save(agent1);
@@ -27,6 +29,7 @@ public class LoadDatabase {
             parkingLotRepository.save(parkingLot);
             parkingLotRepository.save(parkingLot1);
             parkingLotRepository.save(parkingLot2);
+            parkingLotRepository.save(parkingLot3);
         };
     }
 

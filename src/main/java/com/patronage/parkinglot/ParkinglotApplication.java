@@ -13,7 +13,8 @@ public class ParkinglotApplication {
     }
 
     @Bean
-    public ModelMapper setupObjectMapper() {
+    public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
 }

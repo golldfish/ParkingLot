@@ -13,12 +13,13 @@ import com.patronage.parkinglot.response.exception.AlreadyExistsException;
 import com.patronage.parkinglot.response.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.patronage.parkinglot.service.mapper.Mapper.*;
 
 @Service
 @Transactional
@@ -27,7 +28,6 @@ public class AgentService implements IAgentService {
     private final AgentRepository agentRepository;
     private final ParkingPlaceRepository parkingLotRepository;
     private final ReservationRepository reservationRepository;
-    private final ModelMapper mapper;
 
     @Override
     public List<AgentDTO> getAgents() {
@@ -78,7 +78,6 @@ public class AgentService implements IAgentService {
             throw new NotFoundException("Agent with name: " + name + " is not found.");
         }
         agentRepository.deleteAgentByName(name);
-
     }
 
     @Override
@@ -112,7 +111,7 @@ public class AgentService implements IAgentService {
         List<Reservation> reservations = reservationRepository.findReservationByAgent_Name(name);
         List<ParkingPlaceDTO> parkingLotDTOS = new ArrayList<>();
         reservations.forEach(reservation -> {
-            parkingLotDTOS.add(convertParkingLotToDTO(reservation.getParkingLot()));
+            parkingLotDTOS.add(convertParkingPlaceToDTO(reservation.getParkingLot()));
         });
         return parkingLotDTOS;
     }
@@ -129,16 +128,5 @@ public class AgentService implements IAgentService {
         return reservationRepository.findReservationByParkingLot_Id(id).isPresent();
     }
 
-    private AgentDTO convertAgentToDto(Agent agent) {
-        return mapper.map(agent, AgentDTO.class);
-    }
-
-    private Agent convertToAgentEntity(AgentDTO agentDTO) {
-        return mapper.map(agentDTO, Agent.class);
-    }
-
-    private ParkingPlaceDTO convertParkingLotToDTO(ParkingPlace parkingLot) {
-        return mapper.map(parkingLot, ParkingPlaceDTO.class);
-    }
 
 }

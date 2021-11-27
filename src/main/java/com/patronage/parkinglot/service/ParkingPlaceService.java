@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.patronage.parkinglot.service.mapper.Mapper.convertParkingPlaceToDTO;
+import static com.patronage.parkinglot.service.mapper.Mapper.convertToParkingPlaceEntity;
+
+
 @Service
 @Transactional
 @AllArgsConstructor
@@ -28,7 +32,7 @@ public class ParkingPlaceService implements IParkingPlaceService {
         List<ParkingPlace> parkingPlaces = parkingPlaceRepository.findAll();
         List<ParkingPlaceDTO> placeDTOS = new ArrayList<>();
         parkingPlaces.forEach(place -> {
-            placeDTOS.add(convertParkingPlaceToDto(place));
+            placeDTOS.add(convertParkingPlaceToDTO(place));
         });
         return placeDTOS;
     }
@@ -43,9 +47,9 @@ public class ParkingPlaceService implements IParkingPlaceService {
 
 
     @Override
-    public ParkingPlaceDTO getPlaceByPlaceNumberAndTier(int placeNumber, int tier) throws NotFoundException {
+    public ParkingPlaceDTO getPlaceByPlaceNumberAndTier(int tier, int placeNumber) throws NotFoundException {
         ParkingPlace place = parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier).orElseThrow(() -> new NotFoundException("Place number: " + placeNumber + " on tier: " + tier + " is not found."));
-        return convertParkingPlaceToDto(place);
+        return convertParkingPlaceToDTO(place);
     }
 
     @Override
@@ -65,18 +69,11 @@ public class ParkingPlaceService implements IParkingPlaceService {
 
         List<ParkingPlaceDTO> placeDTOS = new ArrayList<>();
         freePlaces.forEach(place -> {
-            placeDTOS.add(convertParkingPlaceToDto(place));
+            placeDTOS.add(convertParkingPlaceToDTO(place));
         });
         return placeDTOS;
     }
 
-    private ParkingPlaceDTO convertParkingPlaceToDto(ParkingPlace parkingPlace) {
-        return mapper.map(parkingPlace, ParkingPlaceDTO.class);
-    }
-
-    private ParkingPlace convertToParkingPlaceEntity(ParkingPlaceDTO parkingPlaceDTO) {
-        return mapper.map(parkingPlaceDTO, ParkingPlace.class);
-    }
 
     private boolean placeExists(int placeNumber, int tier) {
         return parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier).isPresent();

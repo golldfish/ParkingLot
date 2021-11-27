@@ -7,7 +7,6 @@ import com.patronage.parkinglot.response.exception.AlreadyExistsException;
 import com.patronage.parkinglot.response.exception.NotFoundException;
 import com.patronage.parkinglot.service.AgentService;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import java.util.List;
 public class AgentController {
 
     private final AgentService agentService;
-    private ModelMapper mapper;
 
     @GetMapping("/agents")
     ResponseEntity<List<AgentDTO>> all() {
@@ -51,7 +49,7 @@ public class AgentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/agents/reservation/{placeId}")
+    @DeleteMapping("/agents/reservations/{placeId}")
     ResponseEntity<String> deleteAgentByName(@PathVariable Long placeId) throws NotFoundException {
         agentService.deleteReservation(placeId);
         return new ResponseEntity<>("Reservation successfully deleted", HttpStatus.OK);
