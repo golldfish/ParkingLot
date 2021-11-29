@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -32,10 +31,11 @@ public class AgentControllerTest {
 
     @Test
     public void getAllAgents() throws Exception {
+        //given
         AgentDTO agentDTO = new AgentDTO();
         agentDTO.setId(1L);
         agentDTO.setName("Bob");
-        List<AgentDTO> agents = Collections.singletonList(agentDTO);
+        List<AgentDTO> agents = List.of(agentDTO);
 
         when(agentService.getAgents()).thenReturn((agents));
 

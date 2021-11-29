@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Getter
 @Setter
-@Table(name = "parking_lot")
+@Table(name = "parking_place")
 public class ParkingPlace {
     @Id
     @GeneratedValue
@@ -25,7 +25,10 @@ public class ParkingPlace {
     @NotNull
     private boolean placeForDisabledPeople;
 
-    @OneToOne(mappedBy = "parkingLot")
+    @NotNull
+    private boolean isReserved;
+
+    @OneToOne(mappedBy = "parkingPlace")
     private Reservation reservation;
 
 }

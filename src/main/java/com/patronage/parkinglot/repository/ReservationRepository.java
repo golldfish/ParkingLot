@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    Optional<Reservation> findReservationByParkingLot_Id(Long id);
+    Optional<Reservation> findReservationByParkingPlace_Id(Long id);
 
     List<Reservation> findReservationByAgent_Name(String name);
 
-    void deleteByParkingLotId(Long id);
+    void deleteByParkingPlaceId(Long id);
 
 }
 

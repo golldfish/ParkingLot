@@ -8,4 +8,5 @@ public class ParkingPlaceDTO {
     private int placeNumber;
     private int tier;
     private boolean placeForDisabledPeople;
+    private boolean isReserved;
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface AgentRepository extends JpaRepository<Agent, Long> {
     Optional<Agent> findAgentByName(String name);
 
-    Agent deleteAgentByName(String name);
+    void deleteAgentByName(String name);
 
 
 }

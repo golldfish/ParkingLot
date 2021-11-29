@@ -2,8 +2,10 @@ package com.patronage.parkinglot;
 
 import com.patronage.parkinglot.model.Agent;
 import com.patronage.parkinglot.model.ParkingPlace;
+import com.patronage.parkinglot.model.Reservation;
 import com.patronage.parkinglot.repository.AgentRepository;
 import com.patronage.parkinglot.repository.ParkingPlaceRepository;
+import com.patronage.parkinglot.repository.ReservationRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,23 +15,27 @@ public class LoadDatabase {
 
 
     @Bean
-    CommandLineRunner initDB(AgentRepository agentRepository, ParkingPlaceRepository parkingLotRepository) {
+    CommandLineRunner initDB(AgentRepository agentRepository, ParkingPlaceRepository parkingPlaceRepository, ReservationRepository reservationRepository) {
         Agent agent = createAgent(1L, "Bob");
         Agent agent1 = createAgent(2L, "Logan");
         Agent agent2 = createAgent(3L, "Alice");
-        ParkingPlace parkingLot = createParkingLot(20L, 1, 1, true);
-        ParkingPlace parkingLot1 = createParkingLot(21L, 2, 1, false);
-        ParkingPlace parkingLot2 = createParkingLot(22L, 3, 1, false);
-        ParkingPlace parkingLot3 = createParkingLot(23L, 4, 1, false);
-
+        ParkingPlace parkingPlace = createParkingPlace(4L, 1, 1, true);
+        ParkingPlace parkingPlace1 = createParkingPlace(5L, 2, 1, false);
+        ParkingPlace parkingPlace2 = createParkingPlace(6L, 3, 1, false);
+        ParkingPlace parkingPlace3 = createParkingPlace(7L, 4, 1, false);
+        ParkingPlace parkingPlace4 = createParkingPlace(8L, 1, 2, true);
+        Reservation reservation = createReservation(9L, agent, parkingPlace);
         return args -> {
             agentRepository.save(agent);
             agentRepository.save(agent1);
             agentRepository.save(agent2);
-            parkingLotRepository.save(parkingLot);
-            parkingLotRepository.save(parkingLot1);
-            parkingLotRepository.save(parkingLot2);
-            parkingLotRepository.save(parkingLot3);
+            parkingPlaceRepository.save(parkingPlace);
+            parkingPlaceRepository.save(parkingPlace1);
+            parkingPlaceRepository.save(parkingPlace2);
+            parkingPlaceRepository.save(parkingPlace3);
+            parkingPlaceRepository.save(parkingPlace4);
+            reservationRepository.save(reservation);
+
         };
     }
 
@@ -40,13 +46,23 @@ public class LoadDatabase {
         return agent;
     }
 
-    private ParkingPlace createParkingLot(Long id, int placeNumber, int tier, boolean placeForDisabled) {
-        ParkingPlace parkingLot = new ParkingPlace();
-        parkingLot.setId(id);
-        parkingLot.setPlaceNumber(placeNumber);
-        parkingLot.setTier(tier);
-        parkingLot.setPlaceForDisabledPeople(placeForDisabled);
-        parkingLot.setReservation(null);
-        return parkingLot;
+    private ParkingPlace createParkingPlace(Long id, int placeNumber, int tier, boolean placeForDisabled) {
+        ParkingPlace place = new ParkingPlace();
+        place.setId(id);
+        place.setPlaceNumber(placeNumber);
+        place.setTier(tier);
+        place.setPlaceForDisabledPeople(placeForDisabled);
+        place.setReservation(null);
+        place.setReserved(false);
+        return place;
+    }
+
+    private Reservation createReservation(Long id, Agent agent, ParkingPlace place) {
+        Reservation reservation = new Reservation();
+        reservation.setId(id);
+        reservation.setAgent(agent);
+        reservation.setParkingPlace(place);
+        place.setReserved(true);
+        return reservation;
     }
 }

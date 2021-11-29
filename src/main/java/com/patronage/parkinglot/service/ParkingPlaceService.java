@@ -7,7 +7,6 @@ import com.patronage.parkinglot.repository.ReservationRepository;
 import com.patronage.parkinglot.response.exception.AlreadyExistsException;
 import com.patronage.parkinglot.response.exception.NotFoundException;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,7 +24,6 @@ import static com.patronage.parkinglot.service.mapper.Mapper.convertToParkingPla
 public class ParkingPlaceService implements IParkingPlaceService {
     private final ParkingPlaceRepository parkingPlaceRepository;
     private final ReservationRepository reservationRepository;
-    private final ModelMapper mapper;
 
     @Override
     public List<ParkingPlaceDTO> getPlaces() {

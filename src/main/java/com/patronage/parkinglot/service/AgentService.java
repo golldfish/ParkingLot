@@ -26,7 +26,7 @@ import static com.patronage.parkinglot.service.mapper.Mapper.*;
 @AllArgsConstructor
 public class AgentService implements IAgentService {
     private final AgentRepository agentRepository;
-    private final ParkingPlaceRepository parkingLotRepository;
+    private final ParkingPlaceRepository parkingPlaceRepository;
     private final ReservationRepository reservationRepository;
 
     @Override
@@ -82,17 +82,18 @@ public class AgentService implements IAgentService {
 
     @Override
     public void createReservation(ReservationDTO reservationDTO) throws AlreadyExistsException, NotFoundException {
-        Long placeId = reservationDTO.getParkingLotDTO().getId();
+        Long placeId = reservationDTO.getParkingPlaceDTO().getId();
         String agentName = reservationDTO.getAgentDTO().getName();
         if (reservationExists(placeId)) {
             throw new AlreadyExistsException("Reservation of place: " + placeId + " already exists.");
         }
-        ParkingPlace parkingLot = parkingLotRepository.findById(placeId).orElseThrow(() -> new NotFoundException("Place with id: " + placeId + " is not found."));
+        ParkingPlace parkingLot = parkingPlaceRepository.findById(placeId).orElseThrow(() -> new NotFoundException("Place with id: " + placeId + " is not found."));
         Agent agent = agentRepository.findAgentByName(agentName).orElseThrow(() -> new NotFoundException("Agent with name: " + agentName + " is not found."));
         Reservation reservation = new Reservation();
         reservation.setAgent(agent);
-        reservation.setParkingLot(parkingLot);
+        reservation.setParkingPlace(parkingLot);
         reservationRepository.save(reservation);
+        parkingLot.setReserved(true);
     }
 
     @Override
@@ -100,7 +101,7 @@ public class AgentService implements IAgentService {
         if (!reservationExists(placeId)) {
             throw new NotFoundException("Reservation with placeId: " + placeId + " is not found.");
         }
-        reservationRepository.deleteByParkingLotId(placeId);
+        reservationRepository.deleteByParkingPlaceId(placeId);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class AgentService implements IAgentService {
         List<Reservation> reservations = reservationRepository.findReservationByAgent_Name(name);
         List<ParkingPlaceDTO> parkingLotDTOS = new ArrayList<>();
         reservations.forEach(reservation -> {
-            parkingLotDTOS.add(convertParkingPlaceToDTO(reservation.getParkingLot()));
+            parkingLotDTOS.add(convertParkingPlaceToDTO(reservation.getParkingPlace()));
         });
         return parkingLotDTOS;
     }
@@ -125,7 +126,7 @@ public class AgentService implements IAgentService {
     }
 
     private boolean reservationExists(Long id) {
-        return reservationRepository.findReservationByParkingLot_Id(id).isPresent();
+        return reservationRepository.findReservationByParkingPlace_Id(id).isPresent();
     }
 
 
