@@ -239,9 +239,9 @@ StatusCode        : 200
 Content           : Place successfully deleted
 ```
 
-###Wszystkie komendy `curl` powinny być odpalane z poziomu terminala Windows (cmd)
+### Wszystkie komendy `curl` powinny być odpalane z poziomu terminala Windows (cmd)
 
-###Wymagania
+## Wymagania
 
 - Java 11
 - Maven
