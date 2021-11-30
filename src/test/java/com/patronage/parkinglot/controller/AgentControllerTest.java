@@ -1,7 +1,7 @@
 package com.patronage.parkinglot.controller;
 
 import com.patronage.parkinglot.model.DTO.AgentDTO;
-import com.patronage.parkinglot.service.AgentService;
+import com.patronage.parkinglot.service.AgentServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,13 @@ public class AgentControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private AgentService agentService;
+    private AgentServiceImpl agentService;
 
     @Test
     public void getAllAgents() throws Exception {
         //given
-        AgentDTO agentDTO = new AgentDTO();
-        agentDTO.setId(1L);
-        agentDTO.setName("Bob");
-        List<AgentDTO> agents = List.of(agentDTO);
+        final AgentDTO agentDTO = new AgentDTO(1L, "Bob");
+        final List<AgentDTO> agents = List.of(agentDTO);
 
         when(agentService.getAgents()).thenReturn((agents));
 

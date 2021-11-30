@@ -1,26 +1,26 @@
 package com.patronage.parkinglot.model.DTO;
 
 import com.patronage.parkinglot.model.ParkingPlace;
+import com.patronage.parkinglot.service.mapper.MapStructMapperImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.patronage.parkinglot.service.mapper.Mapper.convertParkingPlaceToDTO;
-import static com.patronage.parkinglot.service.mapper.Mapper.convertToParkingPlaceEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParkingPlaceDTOTest {
+    private final MapStructMapperImpl mapper = new MapStructMapperImpl();
 
     @Test
     @DisplayName("Convert ParkingPlace Entity to ParkingPlaceDTO -> correct")
     public void whenConvertParkingPlaceToParkingPlaceDTO_thenCorrect() {
         //given
-        ParkingPlace place = new ParkingPlace();
+        final ParkingPlace place = new ParkingPlace();
         place.setId(1L);
         place.setPlaceNumber(1);
         place.setTier(1);
         place.setPlaceForDisabledPeople(true);
         //when
-        ParkingPlaceDTO parkingPlaceDTO = convertParkingPlaceToDTO(place);
+        final ParkingPlaceDTO parkingPlaceDTO = mapper.convertParkingPlaceToDTO(place);
         //then
         assertEquals(place.getId(), parkingPlaceDTO.getId());
         assertEquals(place.getPlaceNumber(), parkingPlaceDTO.getPlaceNumber());
@@ -33,18 +33,15 @@ class ParkingPlaceDTOTest {
     @DisplayName("Convert ParkingPlaceDTO to ParkingPlace Entity -> correct")
     public void whenConvertParkingPlaceDTOToParkingPlaceEntity_thenCorrect() {
         //given
-        ParkingPlaceDTO placeDTO = new ParkingPlaceDTO();
-        placeDTO.setId(1L);
-        placeDTO.setPlaceNumber(1);
-        placeDTO.setTier(1);
-        placeDTO.setPlaceForDisabledPeople(false);
+        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false, false);
         //when
-        ParkingPlace place = convertToParkingPlaceEntity(placeDTO);
+        final ParkingPlace place = mapper.convertToParkingPlaceEntity(placeDTO);
         //then
         assertEquals(placeDTO.getId(), place.getId());
         assertEquals(placeDTO.getPlaceNumber(), place.getPlaceNumber());
         assertEquals(placeDTO.getTier(), place.getTier());
         assertEquals(placeDTO.isPlaceForDisabledPeople(), place.isPlaceForDisabledPeople());
+        assertEquals(placeDTO.isReserved(), place.isReserved());
     }
 
 }

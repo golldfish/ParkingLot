@@ -5,7 +5,7 @@ import com.patronage.parkinglot.model.DTO.ParkingPlaceDTO;
 import com.patronage.parkinglot.model.DTO.ReservationDTO;
 import com.patronage.parkinglot.response.exception.AlreadyExistsException;
 import com.patronage.parkinglot.response.exception.NotFoundException;
-import com.patronage.parkinglot.service.AgentService;
+import com.patronage.parkinglot.service.AgentServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AgentController {
 
-    private final AgentService agentService;
+    private final AgentServiceImpl agentService;
 
     @GetMapping("/agents")
     ResponseEntity<List<AgentDTO>> all() {
@@ -26,37 +26,37 @@ public class AgentController {
 
 
     @GetMapping("/agents/{name}")
-    ResponseEntity<AgentDTO> getAgentByName(@PathVariable String name) throws NotFoundException {
+    ResponseEntity<AgentDTO> getAgentByName(@PathVariable final String name) throws NotFoundException {
         return new ResponseEntity<>(agentService.getAgentByName(name), HttpStatus.OK);
     }
 
     @PostMapping("/agents")
-    ResponseEntity<Void> newAgent(@RequestBody AgentDTO newAgent) throws AlreadyExistsException {
+    ResponseEntity<Void> newAgent(@RequestBody final AgentDTO newAgent) throws AlreadyExistsException {
         agentService.createNewAgent(newAgent);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
     @DeleteMapping("/agents/{name}")
-    ResponseEntity<String> deleteAgentByName(@PathVariable String name) throws NotFoundException {
+    ResponseEntity<String> deleteAgentByName(@PathVariable final String name) throws NotFoundException {
         agentService.deleteAgentByName(name);
         return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
     }
 
     @PostMapping("/agents/reservations")
-    ResponseEntity<Void> newReservation(@RequestBody ReservationDTO newReservation) throws AlreadyExistsException, NotFoundException {
+    ResponseEntity<Void> newReservation(@RequestBody final ReservationDTO newReservation) throws AlreadyExistsException, NotFoundException {
         agentService.createReservation(newReservation);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/agents/reservations/{placeId}")
-    ResponseEntity<String> deleteAgentByName(@PathVariable Long placeId) throws NotFoundException {
+    ResponseEntity<String> deleteAgentByName(@PathVariable final Long placeId) throws NotFoundException {
         agentService.deleteReservation(placeId);
         return new ResponseEntity<>("Reservation successfully deleted", HttpStatus.OK);
     }
 
     @GetMapping("/agents/reservations/{name}")
-    ResponseEntity<List<ParkingPlaceDTO>> all(@PathVariable String name) throws NotFoundException {
+    ResponseEntity<List<ParkingPlaceDTO>> all(@PathVariable final String name) throws NotFoundException {
         return new ResponseEntity<>(agentService.getAllReservedPlacesByAgent(name), HttpStatus.OK);
     }
 

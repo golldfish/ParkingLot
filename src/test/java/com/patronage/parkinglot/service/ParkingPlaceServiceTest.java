@@ -31,7 +31,7 @@ class ParkingPlaceServiceTest {
     @Mock
     ReservationRepository reservationRepository;
     @InjectMocks
-    ParkingPlaceService placeService;
+    ParkingPlaceServiceImpl placeService;
 
     @Rule
     public ExpectedException exceptionRule;
@@ -41,15 +41,15 @@ class ParkingPlaceServiceTest {
     @DisplayName("Get list of places")
     public void getPlacesList() {
         //given
-        ParkingPlace place = new ParkingPlace();
+        final ParkingPlace place = new ParkingPlace();
         place.setPlaceNumber(1);
         place.setTier(1);
         place.setPlaceForDisabledPeople(true);
         place.setReserved(false);
-        List<ParkingPlace> parkingPlaceList = List.of(place);
+        final List<ParkingPlace> parkingPlaceList = List.of(place);
         //when
         when(parkingPlaceRepository.findAll()).thenReturn(parkingPlaceList);
-        List<ParkingPlaceDTO> parkingPlaceDto = placeService.getPlaces();
+        final List<ParkingPlaceDTO> parkingPlaceDto = placeService.getPlaces();
         //then
         assertEquals(parkingPlaceDto.get(0).getPlaceNumber(), parkingPlaceList.get(0).getPlaceNumber());
     }
@@ -59,17 +59,15 @@ class ParkingPlaceServiceTest {
     @DisplayName("Create new place using existing one -> should return AlreadyExistsException")
     public void tryToCreateNewPlaceWithExistingOne_thenReturnAlreadyExistException() {
         //given
-        ParkingPlaceDTO placeDTO = new ParkingPlaceDTO();
-        placeDTO.setPlaceNumber(1);
-        placeDTO.setTier(1);
-        String expectedMessage = "Place number: " + placeDTO.getPlaceNumber() + " on tier: " + placeDTO.getTier() + " already exists.";
+        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false, false);
+        final String expectedMessage = "Place number: " + placeDTO.getPlaceNumber() + " on tier: " + placeDTO.getTier() + " already exists.";
         //when
-        Exception exception = assertThrows(AlreadyExistsException.class, () -> {
+        final Exception exception = assertThrows(AlreadyExistsException.class, () -> {
             when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeDTO.getPlaceNumber(), placeDTO.getTier())).thenReturn(Optional.of(new ParkingPlace()));
             placeService.createNewPlace(placeDTO);
         });
         //then
-        String actualMessage = exception.getMessage();
+        final String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
@@ -78,9 +76,7 @@ class ParkingPlaceServiceTest {
     @DisplayName("Create new place")
     public void tryToCreateNewPlace() throws Exception {
         //given
-        ParkingPlaceDTO placeDTO = new ParkingPlaceDTO();
-        placeDTO.setPlaceNumber(1);
-        placeDTO.setTier(1);
+        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false, false);
         //when
         when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeDTO.getPlaceNumber(), placeDTO.getTier())).thenReturn(Optional.empty());
         when(parkingPlaceRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -93,14 +89,14 @@ class ParkingPlaceServiceTest {
     @DisplayName("Get place by number and tier")
     public void tryToGetPlaceByNumberAndTier_thenReturnPlace() throws Exception {
         //given
-        ParkingPlace place = new ParkingPlace();
+        final ParkingPlace place = new ParkingPlace();
         place.setPlaceNumber(1);
         place.setTier(1);
         place.setPlaceForDisabledPeople(true);
         place.setReserved(false);
         //when
         when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier())).thenReturn(Optional.of(place));
-        ParkingPlaceDTO parkingPlaceDto = placeService.getPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier());
+        final ParkingPlaceDTO parkingPlaceDto = placeService.getPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier());
         //then
         assertEquals(parkingPlaceDto.getPlaceNumber(), place.getPlaceNumber());
         assertEquals(parkingPlaceDto.getTier(), place.getTier());

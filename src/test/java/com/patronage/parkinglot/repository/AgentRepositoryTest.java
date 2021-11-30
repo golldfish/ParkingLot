@@ -24,12 +24,12 @@ class AgentRepositoryTest {
     @DisplayName("Find Agent by name -> Agent")
     public void whenFindAgentByName_thenReturnEmployee() {
         //given
-        Agent agent = new Agent();
+        final Agent agent = new Agent();
         agent.setName("Alex");
         entityManager.persist(agent);
 
         //when
-        Optional<Agent> found = repository.findAgentByName(agent.getName());
+        final Optional<Agent> found = repository.findAgentByName(agent.getName());
         //then
         assertThat(found.get().getName())
                 .isEqualTo(agent.getName());
@@ -39,12 +39,11 @@ class AgentRepositoryTest {
     @DisplayName("Delete Agent by name")
     public void whenDeleteAgentByName_thenDbIsEmpty() {
         //given
-        Agent agent = new Agent();
+        final Agent agent = new Agent();
         agent.setName("Alex");
         entityManager.persist(agent);
         //when
         repository.deleteAgentByName(agent.getName());
-        Optional<Agent> after = repository.findAgentByName(agent.getName());
         //then
         assertThat(repository.findAll()).isEmpty();
     }

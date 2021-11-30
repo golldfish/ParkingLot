@@ -15,16 +15,16 @@ public class LoadDatabase {
 
 
     @Bean
-    CommandLineRunner initDB(AgentRepository agentRepository, ParkingPlaceRepository parkingPlaceRepository, ReservationRepository reservationRepository) {
-        Agent agent = createAgent(1L, "Bob");
-        Agent agent1 = createAgent(2L, "Logan");
-        Agent agent2 = createAgent(3L, "Alice");
-        ParkingPlace parkingPlace = createParkingPlace(4L, 1, 1, true);
-        ParkingPlace parkingPlace1 = createParkingPlace(5L, 2, 1, false);
-        ParkingPlace parkingPlace2 = createParkingPlace(6L, 3, 1, false);
-        ParkingPlace parkingPlace3 = createParkingPlace(7L, 4, 1, false);
-        ParkingPlace parkingPlace4 = createParkingPlace(8L, 1, 2, true);
-        Reservation reservation = createReservation(9L, agent, parkingPlace);
+    CommandLineRunner initDB(final AgentRepository agentRepository, final ParkingPlaceRepository parkingPlaceRepository, final ReservationRepository reservationRepository) {
+        final Agent agent = createAgent(1L, "Bob");
+        final Agent agent1 = createAgent(2L, "Logan");
+        final Agent agent2 = createAgent(3L, "Alice");
+        final ParkingPlace parkingPlace = createParkingPlace(4L, 1, 1, true);
+        final ParkingPlace parkingPlace1 = createParkingPlace(5L, 2, 1, false);
+        final ParkingPlace parkingPlace2 = createParkingPlace(6L, 3, 1, false);
+        final ParkingPlace parkingPlace3 = createParkingPlace(7L, 4, 1, false);
+        final ParkingPlace parkingPlace4 = createParkingPlace(8L, 1, 2, true);
+        final Reservation reservation = createReservation(9L, agent, parkingPlace);
         return args -> {
             agentRepository.save(agent);
             agentRepository.save(agent1);
@@ -39,15 +39,15 @@ public class LoadDatabase {
         };
     }
 
-    private Agent createAgent(Long id, String name) {
-        Agent agent = new Agent();
+    private Agent createAgent(final Long id, final String name) {
+        final Agent agent = new Agent();
         agent.setId(id);
         agent.setName(name);
         return agent;
     }
 
-    private ParkingPlace createParkingPlace(Long id, int placeNumber, int tier, boolean placeForDisabled) {
-        ParkingPlace place = new ParkingPlace();
+    private ParkingPlace createParkingPlace(final Long id, final int placeNumber, final int tier, final boolean placeForDisabled) {
+        final ParkingPlace place = new ParkingPlace();
         place.setId(id);
         place.setPlaceNumber(placeNumber);
         place.setTier(tier);
@@ -57,8 +57,8 @@ public class LoadDatabase {
         return place;
     }
 
-    private Reservation createReservation(Long id, Agent agent, ParkingPlace place) {
-        Reservation reservation = new Reservation();
+    private Reservation createReservation(final Long id, final Agent agent, final ParkingPlace place) {
+        final Reservation reservation = new Reservation();
         reservation.setId(id);
         reservation.setAgent(agent);
         reservation.setParkingPlace(place);
