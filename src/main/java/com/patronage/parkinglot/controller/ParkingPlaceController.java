@@ -1,9 +1,9 @@
 package com.patronage.parkinglot.controller;
 
-import com.patronage.parkinglot.model.DTO.ParkingPlaceDTO;
-import com.patronage.parkinglot.response.exception.AlreadyExistsException;
-import com.patronage.parkinglot.response.exception.NotFoundException;
-import com.patronage.parkinglot.service.ParkingPlaceServiceImpl;
+import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.exception.AlreadyExistsException;
+import com.patronage.parkinglot.exception.NotFoundException;
+import com.patronage.parkinglot.service.ParkingPlaceService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ParkingPlaceController {
 
-    private ParkingPlaceServiceImpl parkingPlaceService;
+    private ParkingPlaceService parkingPlaceService;
 
     @GetMapping("/places")
     ResponseEntity<List<ParkingPlaceDTO>> all() {

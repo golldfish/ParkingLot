@@ -1,10 +1,12 @@
-package com.patronage.parkinglot.model.DTO;
+package com.patronage.parkinglot.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class AgentDTO {
-    private final Long id;
     private final String name;
 }

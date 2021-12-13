@@ -1,4 +1,4 @@
-package com.patronage.parkinglot.response.exception;
+package com.patronage.parkinglot.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

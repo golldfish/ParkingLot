@@ -1,14 +1,17 @@
 package com.patronage.parkinglot.model.DTO;
 
+import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
 import com.patronage.parkinglot.model.ParkingPlace;
-import com.patronage.parkinglot.service.mapper.MapStructMapperImpl;
+import com.patronage.parkinglot.service.mapper.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParkingPlaceDTOTest {
-    private final MapStructMapperImpl mapper = new MapStructMapperImpl();
+    //private final MapStructMapper mapper = new MapStructMapper();
+    private final Map mapper = Mappers.getMapper(Map.class);
 
     @Test
     @DisplayName("Convert ParkingPlace Entity to ParkingPlaceDTO -> correct")
@@ -33,7 +36,7 @@ class ParkingPlaceDTOTest {
     @DisplayName("Convert ParkingPlaceDTO to ParkingPlace Entity -> correct")
     public void whenConvertParkingPlaceDTOToParkingPlaceEntity_thenCorrect() {
         //given
-        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false, false);
+        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false);
         //when
         final ParkingPlace place = mapper.convertToParkingPlaceEntity(placeDTO);
         //then
@@ -41,7 +44,6 @@ class ParkingPlaceDTOTest {
         assertEquals(placeDTO.getPlaceNumber(), place.getPlaceNumber());
         assertEquals(placeDTO.getTier(), place.getTier());
         assertEquals(placeDTO.isPlaceForDisabledPeople(), place.isPlaceForDisabledPeople());
-        assertEquals(placeDTO.isReserved(), place.isReserved());
     }
 
 }

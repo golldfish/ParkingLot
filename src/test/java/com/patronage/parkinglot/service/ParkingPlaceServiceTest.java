@@ -1,10 +1,10 @@
 package com.patronage.parkinglot.service;
 
-import com.patronage.parkinglot.model.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.exception.AlreadyExistsException;
 import com.patronage.parkinglot.model.ParkingPlace;
 import com.patronage.parkinglot.repository.ParkingPlaceRepository;
 import com.patronage.parkinglot.repository.ReservationRepository;
-import com.patronage.parkinglot.response.exception.AlreadyExistsException;
 import org.junit.Rule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ParkingPlaceServiceTest {
     @Mock
     ReservationRepository reservationRepository;
     @InjectMocks
-    ParkingPlaceServiceImpl placeService;
+    ParkingPlaceService placeService;
 
     @Rule
     public ExpectedException exceptionRule;
@@ -45,7 +45,6 @@ class ParkingPlaceServiceTest {
         place.setPlaceNumber(1);
         place.setTier(1);
         place.setPlaceForDisabledPeople(true);
-        place.setReserved(false);
         final List<ParkingPlace> parkingPlaceList = List.of(place);
         //when
         when(parkingPlaceRepository.findAll()).thenReturn(parkingPlaceList);
@@ -59,7 +58,7 @@ class ParkingPlaceServiceTest {
     @DisplayName("Create new place using existing one -> should return AlreadyExistsException")
     public void tryToCreateNewPlaceWithExistingOne_thenReturnAlreadyExistException() {
         //given
-        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false, false);
+        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false);
         final String expectedMessage = "Place number: " + placeDTO.getPlaceNumber() + " on tier: " + placeDTO.getTier() + " already exists.";
         //when
         final Exception exception = assertThrows(AlreadyExistsException.class, () -> {
@@ -76,7 +75,7 @@ class ParkingPlaceServiceTest {
     @DisplayName("Create new place")
     public void tryToCreateNewPlace() throws Exception {
         //given
-        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false, false);
+        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false);
         //when
         when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeDTO.getPlaceNumber(), placeDTO.getTier())).thenReturn(Optional.empty());
         when(parkingPlaceRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -93,7 +92,6 @@ class ParkingPlaceServiceTest {
         place.setPlaceNumber(1);
         place.setTier(1);
         place.setPlaceForDisabledPeople(true);
-        place.setReserved(false);
         //when
         when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier())).thenReturn(Optional.of(place));
         final ParkingPlaceDTO parkingPlaceDto = placeService.getPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier());

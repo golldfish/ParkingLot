@@ -1,11 +1,11 @@
 package com.patronage.parkinglot.controller;
 
-import com.patronage.parkinglot.model.DTO.AgentDTO;
-import com.patronage.parkinglot.model.DTO.ParkingPlaceDTO;
-import com.patronage.parkinglot.model.DTO.ReservationDTO;
-import com.patronage.parkinglot.response.exception.AlreadyExistsException;
-import com.patronage.parkinglot.response.exception.NotFoundException;
-import com.patronage.parkinglot.service.AgentServiceImpl;
+import com.patronage.parkinglot.DTO.AgentDTO;
+import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.DTO.ReservationDTO;
+import com.patronage.parkinglot.exception.AlreadyExistsException;
+import com.patronage.parkinglot.exception.NotFoundException;
+import com.patronage.parkinglot.service.AgentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AgentController {
 
-    private final AgentServiceImpl agentService;
+    private final AgentService agentService;
 
     @GetMapping("/agents")
     ResponseEntity<List<AgentDTO>> all() {
@@ -54,11 +54,12 @@ public class AgentController {
         agentService.deleteReservation(placeId);
         return new ResponseEntity<>("Reservation successfully deleted", HttpStatus.OK);
     }
+    /*
 
     @GetMapping("/agents/reservations/{name}")
     ResponseEntity<List<ParkingPlaceDTO>> all(@PathVariable final String name) throws NotFoundException {
         return new ResponseEntity<>(agentService.getAllReservedPlacesByAgent(name), HttpStatus.OK);
-    }
+    }*/
 
 
 }

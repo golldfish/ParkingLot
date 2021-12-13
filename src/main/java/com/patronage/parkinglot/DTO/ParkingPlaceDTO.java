@@ -1,14 +1,15 @@
-package com.patronage.parkinglot.model.DTO;
+package com.patronage.parkinglot.DTO;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
-@ToString
+@Builder
+@AllArgsConstructor
 public class ParkingPlaceDTO {
     private final Long id;
     private final int placeNumber;
     private final int tier;
     private final boolean placeForDisabledPeople;
-    private final boolean isReserved;
 }
