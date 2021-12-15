@@ -1,8 +1,8 @@
 package com.patronage.parkinglot.service.mapper;
 
-import com.patronage.parkinglot.DTO.AgentDTO;
-import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
-import com.patronage.parkinglot.DTO.ReservationDTO;
+import com.patronage.parkinglot.dto.AgentDto;
+import com.patronage.parkinglot.dto.ParkingPlaceDto;
+import com.patronage.parkinglot.dto.ReservationDto;
 import com.patronage.parkinglot.model.Agent;
 import com.patronage.parkinglot.model.ParkingPlace;
 import com.patronage.parkinglot.model.Reservation;
@@ -14,10 +14,10 @@ import org.mapstruct.Mappings;
 public interface Map {
 
     @Mapping(target = "name", source = "agent.name")
-    AgentDTO convertToAgentDto(final Agent agent);
+    AgentDto convertToAgentDto(final Agent agent);
 
-    @Mapping(target = "name", source = "agentDTO.name")
-    Agent convertToAgentEntity(final AgentDTO agentDTO);
+    @Mapping(target = "name", source = "agentDto.name")
+    Agent convertToAgentEntity(final AgentDto agentDto);
 
     @Mappings({
             @Mapping(target = "id", source = "place.id"),
@@ -25,28 +25,28 @@ public interface Map {
             @Mapping(target = "tier", source = "place.tier"),
             @Mapping(target = "placeForDisabledPeople", source = "place.placeForDisabledPeople")
     })
-    ParkingPlaceDTO convertParkingPlaceToDTO(final ParkingPlace place);
+    ParkingPlaceDto convertParkingPlaceToDto(final ParkingPlace place);
 
     @Mappings({
-            @Mapping(target = "id", source = "parkingPlaceDTO.id"),
-            @Mapping(target = "placeNumber", source = "parkingPlaceDTO.placeNumber"),
-            @Mapping(target = "tier", source = "parkingPlaceDTO.tier"),
-            @Mapping(target = "placeForDisabledPeople", source = "parkingPlaceDTO.placeForDisabledPeople")
+            @Mapping(target = "id", source = "parkingPlaceDto.id"),
+            @Mapping(target = "placeNumber", source = "parkingPlaceDto.placeNumber"),
+            @Mapping(target = "tier", source = "parkingPlaceDto.tier"),
+            @Mapping(target = "placeForDisabledPeople", source = "parkingPlaceDto.placeForDisabledPeople")
     })
-    ParkingPlace convertToParkingPlaceEntity(final ParkingPlaceDTO parkingPlaceDTO);
+    ParkingPlace convertToParkingPlaceEntity(final ParkingPlaceDto parkingPlaceDto);
 
     @Mappings({
             @Mapping(target = "id", source = "reservation.id"),
             @Mapping(target = "agentName", source = "agent.name"),
             @Mapping(target = "parkingPlaceId", source = "parkingPlace.id")
     })
-    ReservationDTO convertRepositoryToDTO(final Reservation reservation);
+    ReservationDto convertRepositoryToDto(final Reservation reservation);
 
     @Mappings({
-            @Mapping(target = "id", source = "reservationDTO.id"),
-            @Mapping(target = "agent.name", source = "reservationDTO.agentName"),
-            @Mapping(target = "parkingPlace.id", source = "reservationDTO.parkingPlaceId")
+            @Mapping(target = "id", source = "reservationDto.id"),
+            @Mapping(target = "agent.name", source = "reservationDto.agentName"),
+            @Mapping(target = "parkingPlace.id", source = "reservationDto.parkingPlaceId")
     })
-    Reservation convertToReservationEntity(final ReservationDTO reservationDTO);
+    Reservation convertToReservationEntity(final ReservationDto reservationDto);
 
 }

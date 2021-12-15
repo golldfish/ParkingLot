@@ -1,6 +1,6 @@
 package com.patronage.parkinglot.controller;
 
-import com.patronage.parkinglot.DTO.AgentDTO;
+import com.patronage.parkinglot.dto.AgentDto;
 import com.patronage.parkinglot.service.AgentService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +32,8 @@ public class AgentControllerTest {
     @Test
     public void getAllAgents() throws Exception {
         //given
-        final AgentDTO agentDTO = new AgentDTO("Bob");
-        final List<AgentDTO> agents = List.of(agentDTO);
+        final AgentDto agentDTO = new AgentDto("Bob");
+        final List<AgentDto> agents = List.of(agentDTO);
 
         when(agentService.getAgents()).thenReturn((agents));
 

@@ -1,6 +1,6 @@
 package com.patronage.parkinglot.service;
 
-import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.dto.ParkingPlaceDto;
 import com.patronage.parkinglot.exception.AlreadyExistsException;
 import com.patronage.parkinglot.model.ParkingPlace;
 import com.patronage.parkinglot.repository.ParkingPlaceRepository;
@@ -48,7 +48,7 @@ class ParkingPlaceServiceTest {
         final List<ParkingPlace> parkingPlaceList = List.of(place);
         //when
         when(parkingPlaceRepository.findAll()).thenReturn(parkingPlaceList);
-        final List<ParkingPlaceDTO> parkingPlaceDto = placeService.getPlaces();
+        final List<ParkingPlaceDto> parkingPlaceDto = placeService.getPlaces();
         //then
         assertEquals(parkingPlaceDto.get(0).getPlaceNumber(), parkingPlaceList.get(0).getPlaceNumber());
     }
@@ -58,12 +58,14 @@ class ParkingPlaceServiceTest {
     @DisplayName("Create new place using existing one -> should return AlreadyExistsException")
     public void tryToCreateNewPlaceWithExistingOne_thenReturnAlreadyExistException() {
         //given
-        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false);
-        final String expectedMessage = "Place number: " + placeDTO.getPlaceNumber() + " on tier: " + placeDTO.getTier() + " already exists.";
+        final int placeNumber = 1;
+        final int tier = 1;
+        final boolean isDisabled = false;
+        final String expectedMessage = String.format("Place number: %s on tier: %s already exists.", placeNumber, tier);
         //when
         final Exception exception = assertThrows(AlreadyExistsException.class, () -> {
-            when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeDTO.getPlaceNumber(), placeDTO.getTier())).thenReturn(Optional.of(new ParkingPlace()));
-            placeService.createNewPlace(placeDTO);
+            when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier)).thenReturn(Optional.of(new ParkingPlace()));
+            placeService.createNewPlace(placeNumber, tier, isDisabled);
         });
         //then
         final String actualMessage = exception.getMessage();
@@ -75,12 +77,14 @@ class ParkingPlaceServiceTest {
     @DisplayName("Create new place")
     public void tryToCreateNewPlace() throws Exception {
         //given
-        final ParkingPlaceDTO placeDTO = new ParkingPlaceDTO(1L, 1, 1, false);
+        final int placeNumber = 1;
+        final int tier = 1;
+        final boolean isDisabled = false;
         //when
-        when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeDTO.getPlaceNumber(), placeDTO.getTier())).thenReturn(Optional.empty());
+        when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier)).thenReturn(Optional.empty());
         when(parkingPlaceRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
         //then
-        placeService.createNewPlace(placeDTO);
+        placeService.createNewPlace(placeNumber, tier, isDisabled);
     }
 
     @ExtendWith(MockitoExtension.class)
@@ -94,7 +98,7 @@ class ParkingPlaceServiceTest {
         place.setPlaceForDisabledPeople(true);
         //when
         when(parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier())).thenReturn(Optional.of(place));
-        final ParkingPlaceDTO parkingPlaceDto = placeService.getPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier());
+        final ParkingPlaceDto parkingPlaceDto = placeService.getPlaceByPlaceNumberAndTier(place.getPlaceNumber(), place.getTier());
         //then
         assertEquals(parkingPlaceDto.getPlaceNumber(), place.getPlaceNumber());
         assertEquals(parkingPlaceDto.getTier(), place.getTier());

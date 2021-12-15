@@ -1,7 +1,6 @@
 package com.patronage.parkinglot.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,6 +8,8 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "reservation")
 public class Reservation implements Serializable {
 
@@ -16,20 +17,16 @@ public class Reservation implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "parkingPlace", referencedColumnName = "id")
-    private ParkingPlace parkingPlace;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent", referencedColumnName = "name")
     private Agent agent;
 
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "parkingPlace", referencedColumnName = "id")
+    private ParkingPlace parkingPlace;
+
     public static Reservation createReservation(final Long id, final Agent agent, final ParkingPlace place) {
-        final Reservation reservation = new Reservation();
-        reservation.setId(id);
-        reservation.setAgent(agent);
-        reservation.setParkingPlace(place);
-        return reservation;
+        return new Reservation(id, agent, place);
     }
 
 

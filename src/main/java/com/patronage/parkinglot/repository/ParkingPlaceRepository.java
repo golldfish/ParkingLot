@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ParkingPlaceRepository extends JpaRepository<ParkingPlace, Long> {
     Optional<ParkingPlace> findParkingPlaceByPlaceNumberAndTier(int placeNumber, int tier);
 
+    Optional<ParkingPlace> findParkingPlaceById(Long id);
+
 }

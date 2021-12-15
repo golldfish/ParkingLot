@@ -12,6 +12,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findReservationByAgent_Name(String name);
 
     void deleteByParkingPlaceId(Long id);
-
 }
 

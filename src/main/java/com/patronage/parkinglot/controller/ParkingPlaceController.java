@@ -1,6 +1,6 @@
 package com.patronage.parkinglot.controller;
 
-import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.dto.ParkingPlaceDto;
 import com.patronage.parkinglot.exception.AlreadyExistsException;
 import com.patronage.parkinglot.exception.NotFoundException;
 import com.patronage.parkinglot.service.ParkingPlaceService;
@@ -18,18 +18,19 @@ public class ParkingPlaceController {
     private ParkingPlaceService parkingPlaceService;
 
     @GetMapping("/places")
-    ResponseEntity<List<ParkingPlaceDTO>> all() {
+    ResponseEntity<List<ParkingPlaceDto>> all() {
         return new ResponseEntity<>(parkingPlaceService.getPlaces(), HttpStatus.OK);
     }
 
     @GetMapping("/places/{tier}/{place}")
-    ResponseEntity<ParkingPlaceDTO> getPlaceByTierAndPlace(@PathVariable final int tier, @PathVariable final int place) throws NotFoundException {
+    ResponseEntity<ParkingPlaceDto> getPlaceByTierAndPlace(@PathVariable final int tier, @PathVariable final int place) throws NotFoundException {
         return new ResponseEntity<>(parkingPlaceService.getPlaceByPlaceNumberAndTier(tier, place), HttpStatus.OK);
     }
 
-    @PostMapping("/places")
-    ResponseEntity<Void> newPlace(@RequestBody final ParkingPlaceDTO newPlace) throws AlreadyExistsException {
-        parkingPlaceService.createNewPlace(newPlace);
+    @RequestMapping(value = "/places")
+    @PostMapping("")
+    ResponseEntity<Void> newPlace(@RequestParam("nr") final int placeNumber, @RequestParam("tier") final int tier, @RequestParam("isDisabled") final boolean isDisabled) throws AlreadyExistsException {
+        parkingPlaceService.createNewPlace(placeNumber, tier, isDisabled);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -40,7 +41,7 @@ public class ParkingPlaceController {
     }
 
     @GetMapping("/free-places")
-    ResponseEntity<List<ParkingPlaceDTO>> getFreePlaces() {
+    ResponseEntity<List<ParkingPlaceDto>> getFreePlaces() {
         return new ResponseEntity<>(parkingPlaceService.getAllFreePlaces(), HttpStatus.OK);
     }
 }

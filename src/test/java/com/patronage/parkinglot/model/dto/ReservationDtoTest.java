@@ -1,6 +1,6 @@
-package com.patronage.parkinglot.model.DTO;
+package com.patronage.parkinglot.model.dto;
 
-import com.patronage.parkinglot.DTO.ReservationDTO;
+import com.patronage.parkinglot.dto.ReservationDto;
 import com.patronage.parkinglot.model.Agent;
 import com.patronage.parkinglot.model.ParkingPlace;
 import com.patronage.parkinglot.model.Reservation;
@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ReservationDTOTest {
+class ReservationDtoTest {
 
     //private final MapStructMapper mapper = new MapStructMapper();
     private final Map mapper = Mappers.getMapper(Map.class);
@@ -22,9 +22,9 @@ class ReservationDTOTest {
         //given
         final Agent agent = Agent.createAgent(1L, "Alex");
         final ParkingPlace place = ParkingPlace.createParkingPlace(5L, 3, 2, false);
-        final Reservation reservation = Reservation.createReservation(2L, agent, place);
+        final Reservation reservation = new Reservation(2L, agent, place);
         //when
-        final ReservationDTO reservationDTO = mapper.convertRepositoryToDTO(reservation);
+        final ReservationDto reservationDTO = mapper.convertRepositoryToDto(reservation);
         //then
         assertEquals(reservation.getId(), reservationDTO.getId());
         assertEquals(reservation.getAgent().getName(), reservationDTO.getAgentName());
@@ -35,7 +35,7 @@ class ReservationDTOTest {
     @DisplayName("Convert ReservationDTO to Reservation Entity -> correct")
     public void whenConvertReservationDTOToReservationEntity_thenCorrect() {
         //given
-        final ReservationDTO reservationDTO = new ReservationDTO(3L, "Alex", 5L);
+        final ReservationDto reservationDTO = new ReservationDto(3L, "Alex", 5L);
         //when
         final Reservation reservation = mapper.convertToReservationEntity(reservationDTO);
         //then

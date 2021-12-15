@@ -1,6 +1,6 @@
-package com.patronage.parkinglot.model.DTO;
+package com.patronage.parkinglot.model.dto;
 
-import com.patronage.parkinglot.DTO.AgentDTO;
+import com.patronage.parkinglot.dto.AgentDto;
 import com.patronage.parkinglot.model.Agent;
 import com.patronage.parkinglot.service.mapper.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +10,7 @@ import org.mapstruct.factory.Mappers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class AgentDTOTest {
+class AgentDtoTest {
     //private final MapStructMapper mapper = new MapStructMapper();
     private final Map mapper = Mappers.getMapper(Map.class);
 
@@ -22,7 +22,7 @@ class AgentDTOTest {
         agent.setId(1L);
         agent.setName("Kevin");
         //when
-        final AgentDTO agentDTO = mapper.convertToAgentDto(agent);
+        final AgentDto agentDTO = mapper.convertToAgentDto(agent);
         //then
         assertEquals(agent.getName(), agentDTO.getName());
     }
@@ -31,7 +31,7 @@ class AgentDTOTest {
     @DisplayName("Convert AgentDTO to Agent Entity -> correct")
     public void whenConvertAgentDTOToAgentEntity_thenCorrect() {
         //given
-        final AgentDTO agentDTO = new AgentDTO("Kevin");
+        final AgentDto agentDTO = new AgentDto("Kevin");
         //when
         final Agent agent = mapper.convertToAgentEntity(agentDTO);
         //then

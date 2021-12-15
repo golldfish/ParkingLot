@@ -1,10 +1,11 @@
 package com.patronage.parkinglot.service;
 
-import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
+import com.patronage.parkinglot.dto.ParkingPlaceDto;
 import com.patronage.parkinglot.exception.AlreadyExistsException;
 import com.patronage.parkinglot.exception.NotFoundException;
 import com.patronage.parkinglot.model.ParkingPlace;
 import com.patronage.parkinglot.repository.ParkingPlaceRepository;
+import com.patronage.parkinglot.repository.ReservationRepository;
 import com.patronage.parkinglot.service.mapper.Map;
 import lombok.AllArgsConstructor;
 import org.mapstruct.factory.Mappers;
@@ -21,60 +22,58 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ParkingPlaceService {
     private final ParkingPlaceRepository parkingPlaceRepository;
-    //private final MapStructMapper mapper = new MapStructMapper();
+    private final ReservationRepository reservationRepository;
     private final Map mapper = Mappers.getMapper(Map.class);
 
-    public List<ParkingPlaceDTO> getPlaces() {
+    public List<ParkingPlaceDto> getPlaces() {
         final List<ParkingPlace> parkingPlaces = parkingPlaceRepository.findAll();
-        final List<ParkingPlaceDTO> placeDTOS = new ArrayList<>();
+        final List<ParkingPlaceDto> parkingPlaceDtos = new ArrayList<>();
         parkingPlaces.forEach(place -> {
-            placeDTOS.add(mapper.convertParkingPlaceToDTO(place));
+            parkingPlaceDtos.add(mapper.convertParkingPlaceToDto(place));
         });
-        return placeDTOS;
+        return parkingPlaceDtos;
     }
 
 
-    public void createNewPlace(final ParkingPlaceDTO parkingPlaceDTO) throws AlreadyExistsException {
-        if (placeExists(parkingPlaceDTO.getPlaceNumber(), parkingPlaceDTO.getTier())) {
-            throw new AlreadyExistsException("Place number: " + parkingPlaceDTO.getPlaceNumber() + " on tier: " + parkingPlaceDTO.getTier() + " already exists.");
-        }
-        parkingPlaceRepository.save(mapper.convertToParkingPlaceEntity(parkingPlaceDTO));
+    public void createNewPlace(final int placeNumber, final int tier, final boolean isDisabled) throws AlreadyExistsException {
+        final ParkingPlaceDto parkingPlaceDto = ParkingPlaceDto.builder().placeNumber(placeNumber).tier(tier).placeForDisabledPeople(isDisabled).build();
+        parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier)
+                .ifPresentOrElse(place -> {
+                    throw new AlreadyExistsException(String.format("Place number: %s on tier: %s already exists.", placeNumber, tier));
+                }, () -> parkingPlaceRepository.save(mapper.convertToParkingPlaceEntity(parkingPlaceDto)));
     }
 
 
-    public ParkingPlaceDTO getPlaceByPlaceNumberAndTier(final int tier, final int placeNumber) throws NotFoundException {
+    public ParkingPlaceDto getPlaceByPlaceNumberAndTier(final int tier, final int placeNumber) throws NotFoundException {
         final ParkingPlace place = parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier).orElseThrow(() -> new NotFoundException("Place number: " + placeNumber + " on tier: " + tier + " is not found."));
-        return mapper.convertParkingPlaceToDTO(place);
+        return mapper.convertParkingPlaceToDto(place);
     }
 
 
     public void deletePlaceById(final Long id) throws NotFoundException {
-        if (!placeExists(id)) {
-            throw new NotFoundException("Place with id: " + id + " is not found.");
-        }
-        parkingPlaceRepository.deleteById(id);
-    }
-
-
-    public List<ParkingPlaceDTO> getAllFreePlaces() {
-        final List<ParkingPlace> parkingPlaces = parkingPlaceRepository.findAll();
-        final List<ParkingPlace> freePlaces = parkingPlaces.stream().filter(parkingPlace -> parkingPlace.getReservation() == null).collect(Collectors.toList());
-
-        final List<ParkingPlaceDTO> placeDTOS = new ArrayList<>();
-        freePlaces.forEach(place -> {
-            placeDTOS.add(mapper.convertParkingPlaceToDTO(place));
+        reservationRepository.findReservationByParkingPlace_Id(id).ifPresent(place -> {
+            throw new AlreadyExistsException(String.format("Unable to remove because reservation for place with id: %s already exists.", id));
         });
-        return placeDTOS;
+        parkingPlaceRepository.findParkingPlaceById(id).ifPresentOrElse(place -> {
+            parkingPlaceRepository.deleteById(id);
+        }, () -> {
+            throw new NotFoundException(String.format("Place with id: %s is not found.", id));
+        });
+
     }
 
 
-    private boolean placeExists(final int placeNumber, final int tier) {
-        return parkingPlaceRepository.findParkingPlaceByPlaceNumberAndTier(placeNumber, tier).isPresent();
-    }
+    public List<ParkingPlaceDto> getAllFreePlaces() {
+        final List<ParkingPlace> parkingPlaces = parkingPlaceRepository.findAll();
+        final List<ParkingPlace> freePlaces = parkingPlaces.stream()
+                .filter(parkingPlace -> parkingPlace.getReservation() == null)
+                .collect(Collectors.toList());
 
-    private boolean placeExists(final Long id) {
-        return parkingPlaceRepository.findById(id).isPresent();
+        final List<ParkingPlaceDto> placeDtos = new ArrayList<>();
+        freePlaces.forEach(place -> {
+            placeDtos.add(mapper.convertParkingPlaceToDto(place));
+        });
+        return placeDtos;
     }
-
 }
 

@@ -1,8 +1,7 @@
 package com.patronage.parkinglot.service;
 
-import com.patronage.parkinglot.DTO.AgentDTO;
-import com.patronage.parkinglot.DTO.ParkingPlaceDTO;
-import com.patronage.parkinglot.DTO.ReservationDTO;
+import com.patronage.parkinglot.dto.AgentDto;
+import com.patronage.parkinglot.dto.ParkingPlaceDto;
 import com.patronage.parkinglot.exception.AlreadyExistsException;
 import com.patronage.parkinglot.exception.NotFoundException;
 import com.patronage.parkinglot.model.Agent;
@@ -20,6 +19,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -28,39 +29,36 @@ public class AgentService {
     private final AgentRepository agentRepository;
     private final ParkingPlaceRepository parkingPlaceRepository;
     private final ReservationRepository reservationRepository;
-    //private final MapStructMapper mapper = new MapStructMapper();
     private final Map mapper = Mappers.getMapper(Map.class);
 
-    public List<AgentDTO> getAgents() {
+    public List<AgentDto> getAgents() {
         final List<Agent> agents = agentRepository.findAll();
 
-        final List<AgentDTO> agentDTOS = new ArrayList<>();
+        final List<AgentDto> agentDtos = new ArrayList<>();
         agents.forEach(agent -> {
-            agentDTOS.add(
-                    mapper.convertToAgentDto(agent));
+            agentDtos.add(mapper.convertToAgentDto(agent));
         });
-        return agentDTOS;
+        return agentDtos;
     }
 
 
-    public AgentDTO getAgentByID(final Long id) {
+    public AgentDto getAgentByID(final Long id) {
 //        Agent agent = repository.findById(id).orElseThrow(() -> new AgentNotFoundException(id));
 //        return convertToDto(agent);
         throw new NotYetImplementedException();
     }
 
 
-    public AgentDTO getAgentByName(final String name) throws NotFoundException {
-        final Agent agent = agentRepository.findAgentByName(name).orElseThrow(() -> new NotFoundException("Agent with name: " + name + " is not found."));
+    public AgentDto getAgentByName(final String name) throws NotFoundException {
+        final Agent agent = agentRepository.findAgentByName(name).orElseThrow(() -> new NotFoundException(String.format("Agent with name: %s is not found.", name)));
         return mapper.convertToAgentDto(agent);
     }
 
 
-    public void createNewAgent(final AgentDTO agentDTO) throws AlreadyExistsException {
-        if (agentExists(agentDTO.getName())) {
-            throw new AlreadyExistsException("Agent with name: " + agentDTO.getName() + " already exists.");
-        }
-        agentRepository.save(mapper.convertToAgentEntity(agentDTO));
+    public void createNewAgent(final AgentDto agentDto) throws AlreadyExistsException {
+        agentRepository.findAll().stream().map(Agent::getName).filter(a -> a.equals(agentDto.getName())).findFirst().ifPresentOrElse(agent -> {
+            throw new AlreadyExistsException(String.format("Agent with name %s already exists.", agentDto.getName()));
+        }, () -> agentRepository.save(mapper.convertToAgentEntity(agentDto)));
     }
 
 
@@ -74,59 +72,45 @@ public class AgentService {
 
 
     public void deleteAgentByName(final String name) throws NotFoundException {
-        if (!agentExists(name)) {
-            throw new NotFoundException("Agent with name: " + name + " is not found.");
-        }
-        agentRepository.deleteAgentByName(name);
+        agentRepository.findAgentByName(name).ifPresentOrElse(agent -> {
+            agentRepository.deleteAgentByName(name);
+        }, () -> {
+            throw new NotFoundException(String.format("Agent with name: %s is not found.", name));
+        });
     }
 
 
-    public void createReservation(final ReservationDTO reservationDTO) throws AlreadyExistsException, NotFoundException {
-        final Long placeId = reservationDTO.getParkingPlaceId();
-        final String agentName = reservationDTO.getAgentName();
-        if (reservationExists(placeId)) {
-            throw new AlreadyExistsException("Reservation of place: " + placeId + " already exists.");
-        }
-        final ParkingPlace parkingPlace = parkingPlaceRepository.findById(placeId).orElseThrow(() -> new NotFoundException("Place with id: " + placeId + " is not found."));
-        final Agent agent = agentRepository.findAgentByName(agentName).orElseThrow(() -> new NotFoundException("Agent with name: " + agentName + " is not found."));
-        final Reservation reservation = new Reservation();
-        reservation.setAgent(agent);
-        reservation.setParkingPlace(parkingPlace);
+    public void createReservation(final String agentName, final Long placeId) throws AlreadyExistsException, NotFoundException {
+        reservationRepository.findAll().stream().map(Reservation::getParkingPlace).filter(a -> Objects.equals(a.getId(), placeId)).findFirst().ifPresent(reservation -> {
+            throw new AlreadyExistsException(String.format("Reservation of place: %s already exists.", placeId));
+        });
+
+        final ParkingPlace parkingPlace = parkingPlaceRepository.findById(placeId).orElseThrow(() -> new NotFoundException(String.format("Place with id: %s is not found.", placeId)));
+        final Agent agent = agentRepository.findAgentByName(agentName).orElseThrow(() -> new NotFoundException(String.format("Agent with name: %s is not found.", agentName)));
+        final Reservation reservation = new Reservation(UUID.randomUUID().getMostSignificantBits(), agent, parkingPlace);
         reservationRepository.save(reservation);
     }
 
 
     public void deleteReservation(final Long placeId) throws NotFoundException {
-        if (!reservationExists(placeId)) {
-            throw new NotFoundException("Reservation with placeId: " + placeId + " is not found.");
-        }
-        reservationRepository.deleteByParkingPlaceId(placeId);
-    }
-
-
-    public List<ParkingPlaceDTO> getAllReservedPlacesByAgent(final String name) throws NotFoundException {
-        if (!agentExists(name)) {
-            throw new NotFoundException("Agent with name: " + name + " is not found.");
-        }
-        final List<Reservation> reservations = reservationRepository.findReservationByAgent_Name(name);
-        final List<ParkingPlaceDTO> parkingPlaceDTOS = new ArrayList<>();
-        reservations.forEach(reservation -> {
-            parkingPlaceDTOS.add(mapper.convertParkingPlaceToDTO(reservation.getParkingPlace()));
+        reservationRepository.findReservationByParkingPlace_Id(placeId).ifPresentOrElse(reservation -> {
+            reservationRepository.deleteByParkingPlaceId(placeId);
+        }, () -> {
+            throw new NotFoundException(String.format("Reservation with placeId: %s is not found.", placeId));
         });
-        return parkingPlaceDTOS;
-    }
-
-    private boolean agentExists(final String name) {
-        return agentRepository.findAgentByName(name).isPresent();
-    }
-
-    private boolean idExists(final Long id) {
-        return agentRepository.findById(id).isPresent();
-    }
-
-    private boolean reservationExists(final Long id) {
-        return reservationRepository.findReservationByParkingPlace_Id(id).isPresent();
     }
 
 
+    public List<ParkingPlaceDto> getAllReservedPlacesByAgent(final String name) throws NotFoundException {
+        agentRepository.findAll().stream().map(Agent::getName).filter(a -> a.equals(name)).findFirst().orElseThrow(() -> {
+            throw new NotFoundException(String.format("Agent with name: %s is not found.", name));
+        });
+
+        final List<Reservation> reservations = reservationRepository.findReservationByAgent_Name(name);
+        final List<ParkingPlaceDto> parkingPlaceDtos = new ArrayList<>();
+        reservations.forEach(reservation -> {
+            parkingPlaceDtos.add(mapper.convertParkingPlaceToDto(reservation.getParkingPlace()));
+        });
+        return parkingPlaceDtos;
+    }
 }
