@@ -17,7 +17,7 @@ Należy zainstalować Dockera. Następnie w folderze projektu należy uruchomić
 ```shell
 docker-compose up
 ```
-Tą samą komendę można uruchomić w terminalu  po otworzeniu projektu w IDE (np. Intellij).
+Tą samą komendę można uruchomić w terminalu po otworzeniu projektu w IDE (np. Intellij).
 
 ## Agent - endpointy API
 ### GET `host:port`/agents
@@ -31,9 +31,9 @@ Odpowiedź:
 ```
 StatusCode        : 200
 Content           : [
-                        {"id":1,"name":"Bob"},
-                        {"id":2,"name":"Logan"},
-                        {"id":3,"name":"Alice"}
+                        {"name":"Bob"},
+                        {"name":"Logan"},
+                        {"name":"Alice"}
                     ]
 ```
 
@@ -49,7 +49,7 @@ curl http://localhost:8080/agents/Bob
 Odpowiedź:
 ```
 StatusCode        : 200
-Content           : {"id":1,"name":"Bob"}
+Content           : {"name":"Bob"}
 ```
 
 ### GET `host:port`/agents/reservations/{name}
@@ -64,22 +64,16 @@ curl http://localhost:8080/agents/reservations/Bob
 Odpowiedź:
 ```
 StatusCode        : 200
-Content           : [{"id":4,"placeNumber":1,"tier":1,"placeForDisabledPeople":true,"reserved":true}]
+Content           : [{"id":4,"placeNumber":1,"tier":1,"placeForDisabledPeople":true}]
 ```
-### POST `host:port`/agents
-Dodaje nowego agenta. 
+### POST `host:port`/agents?name={name}
+Dodaje nowego agenta.
 
-JSON body: 
-```shell
-{
-	"name": "Rafael"
-}
-```
 `name` - należy wpisać imię agenta, którego chcemy dodać 
 
 Curl:
 ```shell
-curl --request POST --url http://localhost:8080/agents --header 'Content-Type: application/json' --data '{"name": "Rafael"}'
+curl --request POST --url "http://localhost:8080/agents?name=Louis"
 ```
 Odpowiedź:
 ```
@@ -87,28 +81,20 @@ StatusCode        : 201
 Content           : No response body 
 ```
 
-### POST `host:port`/agents/reservations
+### POST `host:port`agents/reservations?name={name}&place={placeId}
 Dodaje rezerwację dla konkretnego agenta.
-
-JSON body: 
-```shell
-{
-	"parkingPlaceDTO": {
-		"id" : 5
-	},
-	"agentDTO":{
-		"name": "John"
-	}
-}
-```
-`id` - należy wpisać id miejsca parkingowego 
 
 `name` - należy wpisać imię agenta dokonującego rezerwacji
 
+`placeId` - należy wpisać id miejsca parkingowego 
+
+
 Curl:
 ```shell
-curl --request POST --url http://localhost:8080/agents/reservations --header 'Content-Type: application/json' --data '{"parkingPlaceDTO": {"id" : 5},"agentDTO":{"name": "John"}}'
+curl --request POST --url "http://localhost:8080/agents/reservations?name=Bob&place=7"
 ```
+
+
 Odpowiedź:
 ```
 StatusCode        : 201
@@ -121,7 +107,7 @@ Usuwa konkretnego agenta.
 
 Curl:
 ```shell
-curl --request DELETE --url http://localhost:8080/agents/Rafael
+curl --request DELETE --url http://localhost:8080/agents/Lou
 ```
 Odpowiedź:
 ```
@@ -130,22 +116,22 @@ Content           : User successfully deleted
 ```
 
 ### DELETE `host:port`/agents/reservations/{placeId}
-Usuwa rezerwację dla konkretnego agenta.
+Usuwa rezerwację.
 
 `placeId` - w tym polu należy podać id miejsca, dla którego rezerwację chce się usunać
 
 Curl:
 ```shell
-curl --request DELETE --url http://localhost:8080/agents/reservations/5 
+curl --request DELETE --url http://localhost:8080/agents/reservations/7 
 ```
 Odpowiedź:
 ```
 StatusCode        : 200
-Content           : Reservation successfully deleted, 
+Content           : Reservation successfully deleted
 ```
 ## Parking place - endpointy API
 ### GET `host:port`/places
-Wyświetla listę wszystkich agentów
+Wyświetla listę wszystkich miejsc.
 
 Curl:
 ```shell
@@ -155,10 +141,10 @@ Odpowiedź:
 ```
 StatusCode        : 200
 Content           : [
-                        {"id":4,"placeNumber":1,"tier":1,"placeForDisabledPeople":true,"reserved":true},
-                        {"id":6,"placeNumber":3,"tier":1,"placeForDisabledPeople":false,"reserved":false},
-                        {"id":7,"placeNumber":4,"tier":1,"placeForDisabledPeople":false,"reserved":false},
-                        {"id":8,"placeNumber":1,"tier":2,"placeForDisabledPeople":true,"reserved":false}
+                        {"id":4,"placeNumber":1,"tier":1,"placeForDisabledPeople":true},
+                        {"id":6,"placeNumber":3,"tier":1,"placeForDisabledPeople":false},
+                        {"id":7,"placeNumber":4,"tier":1,"placeForDisabledPeople":false},
+                        {"id":8,"placeNumber":1,"tier":2,"placeForDisabledPeople":true}
                     ]
 ```
 
@@ -171,12 +157,12 @@ Wyświetla informację o konkretnym miejscu.
 
 Curl:
 ```shell
-curl --request GET --url http://localhost:8080/places/1/1
+curl --request GET --url http://localhost:8080/places/1/2
   ```
 Odpowiedź:
 ```
 StatusCode        : 200
-Content           : {"id":4,"placeNumber":1,"tier":1,"placeForDisabledPeople":true,"reserved":true}
+Content           : {"id":4,"placeNumber":1,"tier":1,"placeForDisabledPeople":true}
 ```
 
 ### GET `host:port`/free-places
@@ -189,35 +175,25 @@ Odpowiedź:
 ```
 StatusCode        : 200
 Content           : [
-                        {"id":6,"placeNumber":3,"tier":1,"placeForDisabledPeople":false,"reserved":false},
-                        {"id":7,"placeNumber":4,"tier":1,"placeForDisabledPeople":false,"reserved":false},
-                        {"id":8,"placeNumber":1,"tier":2,"placeForDisabledPeople":true,"reserved":false},
-                        {"id":19,"placeNumber":2,"tier":2,"placeForDisabledPeople":true,"reserved":false},
-                        {"id":20,"placeNumber":3,"tier":2,"placeForDisabledPeople":false,"reserved":false}
+                        {"id":6,"placeNumber":3,"tier":1,"placeForDisabledPeople":false},
+                        {"id":7,"placeNumber":4,"tier":1,"placeForDisabledPeople":false},
+                        {"id":8,"placeNumber":1,"tier":2,"placeForDisabledPeople":true}
                     ]
 
 ```
 
-### POST `host:port`/places
+### POST `host:port`/places?nr={nr}&tier={tier}&isDisabled={isDisabled}
 Dodaje nowe miejsce parkingowe.
 
-JSON body:
-```shell
-{
-	"placeNumber":"1",
-	"tier":"2",
-	"placeForDisabledPeople": "true"
-}
-```
-`placeNumber` - należy wpisać numer miejsca parkingowego
+`nr` - należy wpisać numer miejsca parkingowego
 
 `tier` - należy wpisać piętro na którym znajduje się miejsce
 
-`placeForDisabledPeople` - należy wpisać, czy miejsce jest przeznaczone dla osób niepełnosprawnych (true/false)
+`isDisabled` - należy wpisać, czy miejsce jest przeznaczone dla osób niepełnosprawnych (true/false)
 
 Curl:
 ```shell
-curl --request POST --url http://localhost:8080/places --header 'Content-Type: application/json' --data '{	"placeNumber":"2",	"tier":"2",	"placeForDisabledPeople": "true"}'
+curl --request POST --url "http://localhost:8080/places?nr=3&tier=3&isDisabled=false" 
  ```
 Odpowiedź:
 ```
@@ -231,7 +207,7 @@ Usuwa miejsce parkingowe.
 
 Curl:
 ```shell
-curl --request DELETE --url http://localhost:8080/places/20
+curl --request DELETE --url http://localhost:8080/places/6
 ```
 Odpowiedź:
 ```
